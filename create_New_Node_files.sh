@@ -45,10 +45,10 @@ else
                      jcli key generate --type=SumEd25519_12 > kes$1.prv
                      jcli key to-public < kes$1.prv > kes$1.pub
                      jcli key generate --type=Curve25519_2HashDH > vrf$1.prv
-                     jcli key to-public < vrf.prv > vrf$1.pub
+                     jcli key to-public < vrf$1.prv > vrf$1.pub
                      read -p "Remind me of your name please?  " username
                      echo "It's been fun "$username"! Let's do this again sometime soon!"
-                     echo "All done for now...and hey, "username", Don't forget to send your 500.3 tAda to your pledge address above"
+                     echo "All done for now...and hey, "$username", Don't forget to send your 500.3 tAda to your pledge address above"
                      sleep 3
                else
                      #the given NODE_ID is something other than 2 or 3 digits
