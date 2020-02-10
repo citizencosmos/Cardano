@@ -31,10 +31,10 @@ else
                      echo "Confirm deletion of generic node-config from files directory"
                      rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
                      echo "Starting Jormungandr Passive node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
-                     jormungandr --genesis-block-hash ${GENESIS_HASH} --config ~/node$1/files/node-config$1.yaml
-                     echo "......waiting for node to start....."
-                     sleep 20
-                     echo  echo "$(jcli rest v0 node stats get -h http://127.0.0.1:4103/api)"
+                     nohup jormungandr --genesis-block-hash ${GENESIS_HASH} --config ~/node$1/files/node-config$1.yaml > ~/node$1/files/nohup$1.out &
+                     echo "......waiting 10 seconds for node to start....."
+                     sleep 10
+                     echo "$(jcli rest v0 node stats get -h http://127.0.0.1:41"$1"/api)"
                else
                      #the given NODE_ID is something other than 2 digits
                      echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
