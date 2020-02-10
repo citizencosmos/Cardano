@@ -28,9 +28,16 @@ else
                then
                      echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
                      sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
-                     echo "Confirm deletion of generic node-config from files directory"
+                     echo "Confirm deletion of temporary generic node-config from files directory"
                      rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
-                     echo "Starting Jormungandr Passive node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
+                     echo "OK, let's update your firewall. You'll need to enter the PASSWORD for the current USER"
+                     echo "This is required for the node to reach peers in the outside world"
+                     echo "We're going to open port: 31"$1 "to ALLOW IN tcp traffic from Anywhere."
+                     sudo ufw --force enable
+                     sudo ufw allow 31$1
+                     sudo ufw reload
+                     echo
+                     echo "Starting Jormungandr PASSIVE node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
                      nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml > ~/node$1/files/nohup$1.out &
                      echo "......waiting 10 seconds for node to start....."
                      sleep 10
