@@ -35,6 +35,15 @@ else
                      echo "......waiting 10 seconds for node to start....."
                      sleep 10
                      echo "$(jcli rest v0 node stats get -h http://127.0.0.1:41"$1"/api)"
+                     echo "Generating public and private keys now..."
+                     jcli key generate --type ed25519 | tee ~/node$1/files/owner$1.prv | jcli key to-public > ~/node$1/files/owner$1.pub
+                     echo "Generating your owner.addr (pledge address) file..."
+                     jcli address account --testing --prefix addr $(cat ~/node$1/files/owner.pub) > ~/node$1/files/owner$1.addr
+                     echo "OK! Time to fund your pledge account with 500.3 tAda!"
+                     echo "FUND: use Daedalus or cardano-wallet and send funds to this address: "$(cat ~/node$1/files/owner$1.addr)
+                     echo "That's all we're doing for now! Nice work!"
+                     echo "Soon we'll also generate your secret keys and fire up your Leader node"
+                     sleep 4
                else
                      #the given NODE_ID is something other than 2 digits
                      echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
