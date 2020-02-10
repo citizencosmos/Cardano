@@ -35,20 +35,23 @@ else
                      echo "......waiting 10 seconds for node to start....."
                      sleep 10
                      echo "$(jcli rest v0 node stats get -h http://127.0.0.1:41"$1"/api)"
-                     echo "Generating public and private keys now..."
+                     echo "Generating wallet address and keys for your pledge account now..."
                      jcli key generate --type ed25519 | tee ~/node$1/files/owner$1.prv | jcli key to-public > ~/node$1/files/owner$1.pub
                      echo "Generating your owner.addr (pledge address) file..."
                      jcli address account --testing --prefix addr $(cat ~/node$1/files/owner$1.pub) > ~/node$1/files/owner$1.addr
                      echo "OK! Time to fund your pledge account with 500.3 tAda!"
                      echo "FUND: use Daedalus or cardano-wallet and send funds to this address: "$(cat ~/node$1/files/owner$1.addr)
-                     echo "Let's go ahead and generate your secret keys"
-                     jcli key generate --type=SumEd25519_12 > kes$1.prv
-                     jcli key to-public < kes$1.prv > kes$1.pub
-                     jcli key generate --type=Curve25519_2HashDH > vrf$1.prv
-                     jcli key to-public < vrf$1.prv > vrf$1.pub
+                     echo "Let's go ahead and generate your new node's public and private keys"
+                     read -p "Do you understand that after we do this, you will need to PROTECT your PRIVATE KEYS by saving them off this server?" response
+                     echo "You told me "$response" so I am trusting you to do that soon."
+                     jcli key generate --type=SumEd25519_12 > ~/node$1/files/kes$1.prv
+                     jcli key to-public < ~/node$1/files/kes$1.prv > ~/node$1/files/kes$1.pub
+                     jcli key generate --type=Curve25519_2HashDH > ~/node$1/files/vrf$1.prv
+                     jcli key to-public < ~/node$1/files/vrf$1.prv > ~/node$1/files/vrf$1.pub
                      read -p "Remind me of your name please?  " username
                      echo "It's been fun "$username"! Let's do this again sometime soon!"
-                     echo "All done for now...and hey, "$username", Don't forget to send your 500.3 tAda to your pledge address above"
+                     echo "OK! All done for now...and"
+                     echo "Hey, "$username", remember to send 500.3 tAda to your pledge address and PROTECT YOUR KEYS!"
                      sleep 3
                else
                      #the given NODE_ID is something other than 2 or 3 digits
