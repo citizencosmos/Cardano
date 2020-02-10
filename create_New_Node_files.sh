@@ -14,7 +14,7 @@ else
       echo "Creating directory and files for node"$1" now..."
       mkdir -v  ~/node$1
       mkdir -v ~/storage$1
-      cp -a -v ~/storage2/. ~/storage$1/
+      cp -a -v ~/storage/. ~/storage$1/
       mkdir -v ~/node$1/files
       echo "Creating log file for node"$1
       touch ~/logs/node$1.out
