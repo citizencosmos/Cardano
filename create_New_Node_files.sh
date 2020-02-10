@@ -38,12 +38,18 @@ else
                      echo "Generating public and private keys now..."
                      jcli key generate --type ed25519 | tee ~/node$1/files/owner$1.prv | jcli key to-public > ~/node$1/files/owner$1.pub
                      echo "Generating your owner.addr (pledge address) file..."
-                     jcli address account --testing --prefix addr $(cat ~/node$1/files/owner.pub) > ~/node$1/files/owner$1.addr
+                     jcli address account --testing --prefix addr $(cat ~/node$1/files/owner$1.pub) > ~/node$1/files/owner$1.addr
                      echo "OK! Time to fund your pledge account with 500.3 tAda!"
                      echo "FUND: use Daedalus or cardano-wallet and send funds to this address: "$(cat ~/node$1/files/owner$1.addr)
-                     echo "That's all we're doing for now! Nice work!"
-                     echo "Soon we'll also generate your secret keys and fire up your Leader node"
-                     sleep 4
+                     echo "Let's go ahead and generate your secret keys"
+                     jcli key generate --type=SumEd25519_12 > kes$1.prv
+                     jcli key to-public < kes$1.prv > kes$1.pub
+                     jcli key generate --type=Curve25519_2HashDH > vrf$1.prv
+                     jcli key to-public < vrf.prv > vrf$1.pub
+                     read -p "Remind me of your name please?  " username
+                     echo "It's been fun "$username"! Let's do this again sometime soon!"
+                     echo "All done for now...and hey, "username", Don't forget to send your 500.3 tAda to your pledge address above"
+                     sleep 3
                else
                      #the given NODE_ID is something other than 2 or 3 digits
                      echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
