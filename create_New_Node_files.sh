@@ -24,7 +24,7 @@ else
           then
                cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
                #check for 2 digit NODE_ID or not
-               if [[ $1 =~ ^[0-9]{2}$ ]] && ((number=10#$1))
+               if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
                then
                      echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
                      sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
@@ -45,7 +45,7 @@ else
                      echo "Soon we'll also generate your secret keys and fire up your Leader node"
                      sleep 4
                else
-                     #the given NODE_ID is something other than 2 digits
+                     #the given NODE_ID is something other than 2 or 3 digits
                      echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
                      echo "Replace the placeholder <NODE_ID> with your preferred 2 digit number (eg 99) or assign your own PORTS"
                      #edit storage path in node-config by replacing <NODE_ID> with the argument
