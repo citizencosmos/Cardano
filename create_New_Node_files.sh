@@ -1,0 +1,47 @@
+#!/bin/bash
+#check if the script was given an argument
+if [ -z $1 ]
+then
+#script wasn't passed an input argument, try again
+echo "Give a number or letter to assign for the new Node, eg Node4 or NodeD"
+echo "RECOMMENDED to use a two digit number for NODE_ID (eg 88) as it can be used for your PORT configuration in your new node-config file"
+else
+#I suck at indenting, so this looks like garbage, sorry
+  if [ -d ~/node$1 ]
+  then
+      echo "Ooops. Try again because ~/node"$1" already exists. Choose another number or letter for your new NODE_ID"
+  else
+      echo "Creating directory and files for node"$1" now..."
+      mkdir -v  ~/node$1
+      mkdir -v ~/storage$1
+      cp -a -v ~/storage2/. ~/storage$1/
+      mkdir -v ~/node$1/files
+      echo "Creating log file for node"$1
+      touch ~/logs/node$1.out
+      #done making new directories and files
+      #check for node-config-GENERIC-INFILE.yaml in user home directory
+          if [ -f ~/node-config-GENERIC-INFILE.yaml ]
+          then
+               cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
+               #check for 2 digit NODE_ID or not
+               if [[ $1 =~ ^[0-9]{2}$ ]] && ((number=10#$1))
+               then
+                     echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
+                     sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
+                     echo "Confirm deletion of generic node-config from files directory"
+                     rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
+               else
+                     #the given NODE_ID is something other than 2 digits
+                     echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
+                     echo "Replace the placeholder <NODE_ID> with your preferred 2 digit number (eg 99) or assign your own PORTS"
+                     #edit storage path in node-config by replacing <NODE_ID> with the argument
+                     sed 's/storage<NODE_ID>/storage'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
+                     echo "Confirm deletion of generic node-config from files directory"
+                     rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
+                fi
+          else
+            echo  "ATTENTION: you must put a copy of node-config-GENERIC-INFILE.yaml in your home directory (eg ~/ or /home/<username>/)"
+          fi
+  fi
+# closes the opening check for an argument
+fi
