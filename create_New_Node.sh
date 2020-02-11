@@ -49,8 +49,8 @@ else
                      echo "OK! Time to fund your pledge account with 500.3 tAda!"
                      echo "FUND: use Daedalus or cardano-wallet and send funds to this address: "$(cat ~/node$1/files/owner$1.addr)
                      echo "Let's go ahead and generate your new node's public and private keys"
-                     read -p "Do you understand that after we do this, you will need to PROTECT your PRIVATE KEYS by saving them off this server?" response
-                     echo "You told me "$response" so I am trusting you to do that soon."
+                     read -p "Do you understand that after we do this, you will need to PROTECT your PRIVATE KEYS by saving them off this server?" keyresponse
+                     echo "You told me "$keyresponse" so I am trusting you to do that soon."
                      jcli key generate --type=SumEd25519_12 > ~/node$1/files/kes$1.prv
                      jcli key to-public < ~/node$1/files/kes$1.prv > ~/node$1/files/kes$1.pub
                      jcli key generate --type=Curve25519_2HashDH > ~/node$1/files/vrf$1.prv
@@ -62,8 +62,13 @@ else
                      sleep 3
                else
                      #the given NODE_ID is something other than 2 or 3 digits
-                     echo "ATTENTION: you *must* edit the PORTS in ~/node"$1"/files/node-config"$1".yaml"
-                     echo "Replace the placeholder <NODE_ID> with your preferred 2 digit number (eg 99) or assign your own PORTS"
+                     echo "ATTENTION: we are going to edit the PORTS for LISTEN and REST in your ~/node"$1"/files/node-config"$1".yaml"
+                     echo "CAREFUL HERE! PORTS MUST be an integer (whole number) between 1025 and 65535."
+                     echo "DO NOT use a previously used PORT! Seriously, it won't work."
+                     read -p "What PORT do you want your node to use for LISTEN and PUBLIC_ADDRESS? " PORT_LISTEN
+                     #Do an integer test for port range 1025-66535
+                     if [[ $PORT_LISTEN =~ ^[0-9]{4,5}$ ]] && [ "$PORT_LISTEN" -ge 1025 ] && [ "$PORT_LISTEN" -le 65535 ]; then echo "Your LISTEN PORT will beREPLY=-2;
+                     
                      #edit storage path in node-config by replacing <NODE_ID> with the argument
                      sed 's/storage<NODE_ID>/storage'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
                      echo "Confirm deletion of generic node-config from files directory"
