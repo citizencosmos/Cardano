@@ -9,10 +9,8 @@ echo "========="
 echo "SET TAX RATIO: the percentage of rewards your pool will deduct from total rewards earned."
 echo "This MUST be entered in a fraction, eg for 10% enter 1/10, for 1% enter 1/100, for 2.75% enter 275/10000"
 read -p "What do you want your pool's Tax rate to be? (in fraction form) :" TAX_RATIO
-TAX_RATIO=$TAX_RATIO
-echo $TAX_RATIO
-echo "You entered a Tax rate of: "
-awk -vn=$TAX_RATIO 'BEGIN{print(($TAX_RATIO)*100)" %"}'
+echo "You entered a Tax rate of: " 
+awk -vn=$TAX_RATIO 'BEGIN{print(('$TAX_RATIO')*100)" %"}'
 #TODO: error check confirmation, for now, just do it
 #read -p "Is this correct? (y/n)" confirm_TAX_RATIO
 echo "Well, I hope it's right because I don't have error handling for your mistakes"
@@ -21,9 +19,8 @@ echo "Well, I hope it's right because I don't have error handling for your mista
 echo "========="
 echo "SET TAX FIXED: this is a flat fee in Ada that your pool will deduct from total rewards earned."
 read -p "What is your pool's Fixed Tax fee in Ada? " TAX_FIXED
-TAX_FIXED=$TAX_FIXED
 echo "shown in lovelaces: "
-awk -vn=$TAX_FIXED 'BEGIN{print(($TAX_FIXED)*1000000)" Lovelaces"}'
+awk -vn=$TAX_FIXED 'BEGIN{print(('$TAX_FIXED')*1000000)" Lovelaces"}'
 #TODO: error check confirmation, for now, just do it
 #read -p "Is this correct? y/n" confirm_TAX_FIXED
 #
@@ -31,9 +28,8 @@ awk -vn=$TAX_FIXED 'BEGIN{print(($TAX_FIXED)*1000000)" Lovelaces"}'
 echo "========="
 echo "SET TAX LIMIT: this is a MAXIMUM or CAP of rewards in Ada that your pool will receive from total rewards earned."
 read -p "What is your pool's Tax Limit cap in Ada? " TAX_LIMIT
-TAX_LIMIT=$TAX_LIMIT
 echo "shown in lovelaces: "
-awk -vn=$TAX_LIMIT 'BEGIN{print(($TAX_LIMIT)*1000000)" Lovelaces"}'
+awk -vn=$TAX_LIMIT 'BEGIN{print(('$TAX_LIMIT')*1000000)" Lovelaces"}'
 #TODO: error check confirmation, for now, just do it
 #read -p "Is this correct? y/n" confirm_TAX_LIMIT
 
