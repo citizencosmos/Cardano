@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #get the inputs for Tax Ratio, Tax Fixed, and Tax Limit (optional)
+echo "******=========******"
 echo "Now let's set up your pool's fee structure"
 echo "Do this carefully, because I'm not checking your math for errors!"
 #
@@ -13,7 +14,6 @@ echo "You entered a Tax rate of: "
 awk -vn=$TAX_RATIO 'BEGIN{print(('$TAX_RATIO')*100)" %"}'
 #TODO: error check confirmation, for now, just do it
 #read -p "Is this correct? (y/n)" confirm_TAX_RATIO
-echo "Well, I hope it's right because I don't have error handling for your mistakes"
 #
 #TAX_FIXED set below, also known as flat tax
 echo "========="
@@ -32,16 +32,15 @@ echo "shown in lovelaces: "
 awk -vn=$TAX_LIMIT 'BEGIN{print(('$TAX_LIMIT')*1000000)" Lovelaces"}'
 #TODO: error check confirmation, for now, just do it
 #read -p "Is this correct? y/n" confirm_TAX_LIMIT
-
-echo "jcli-test certificate new stake-pool-registration \"
+#
+#TODO: concatenate the jcli command with the input variables from above
+#echo "jcli-test certificate new stake-pool-registration \"
 #echo "    --kes-key $(cat ~/node$1/files/kes$1.pub) \"
 #echo "    --vrf-key $(cat ~/node$1/files/vrf$1.pub) \"
 #echo "    --owner $(cat ~/node$1/files/owner$1.addr) \"
-echo "    --management-threshold 1 \"
-echo "    --tax-limit $TAX_LIMIT \"
-echo "    --tax-ratio $TAX_RATIO \"
-echo "    --tax-fixed $TAX_FIXED \"
-echo "    --start-validity 0 \"
-echo "    > stake-pool-registration.cert"
-
-echo "cool. we made it to the eof."
+#echo "    --management-threshold 1 \"
+echo "    --tax-limit $TAX_LIMIT "
+echo "    --tax-ratio $TAX_RATIO "
+echo "    --tax-fixed $TAX_FIXED "
+#echo "    --start-validity 0 "
+#echo "    > stake-pool-registration.cert"
