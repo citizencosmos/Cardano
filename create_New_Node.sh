@@ -127,14 +127,17 @@ else
                      read -p "What PORT do you want to use as your REST PORT (1025-65535)? " PORT_REST
                       #Do an integer test for port range 1025-66535
                       if [ "$PORT_LISTEN != "$PORT_REST" ] && [ "$PORT_LISTEN" -ge 1025 ] && [ "$PORT_LISTEN" -le 65535 ] && [ "$PORT_REST" -ge 1025 ] && [ "$PORT_REST" -le 65535 ]
-                      then  #we can modify the node-config file now
+                      then  # we can modify the node-config file now
                       echo "Your LISTEN PORT is : " $PORT_LISTEN
                       echo "Your REST PORT is : " $PORT_REST
                       sed 's/31<NODE_ID>/'$PORT_LISTEN'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml
                       sed 's/41<NODE_ID>/'$PORT_LISTEN'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml
                       sed 's/storage<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
                       echo "Confirm deletion of temporary generic node-config from files directory"
-                      rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml 
+                      rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
+                      else
+                      echo "Something went wrong with your PORTS, sorry. We couldn't modify your ~/node"$1"/files/node-config"$1".yaml"
+                      fi
                      #UFW requires sudo 
                      echo "OK, let's update your firewall. You'll need to enter the PASSWORD for the current USER"
                      echo "This is required for the node to reach peers in the outside world"
