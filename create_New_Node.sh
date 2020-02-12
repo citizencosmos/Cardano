@@ -23,7 +23,7 @@ else
           if [ -f ~/node-config-GENERIC-INFILE.yaml ]
           then
                cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
-               #check for 2 digit NODE_ID or not
+               #check for 2 or 3 digit NODE_ID or not
                if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
                then
                      echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
@@ -157,7 +157,7 @@ else
                      # Step 2 : Get your reward credentials 
                      echo "Generating wallet address and keys for your pledge account now..."
                      jcli key generate --type ed25519 | tee ~/node$1/files/owner$1.prv | jcli key to-public > ~/node$1/files/owner$1.pub
-                     echo "Generating your owner.addr (pledge address) file..."
+                     echo "Generating your owner.addr aka pledge address file..."
                      jcli address account --testing --prefix addr $(cat ~/node$1/files/owner$1.pub) > ~/node$1/files/owner$1.addr
                      # Step 3: Fund your account
                      echo "OK! Time to fund your pledge account with 500.3 tAda!"
@@ -183,18 +183,18 @@ else
                       echo "========="
                       echo "SET TAX RATIO: the percentage of rewards your pool will deduct from total rewards earned."
                       echo "This MUST be entered in a fraction, eg for 10% enter 1/10, for 1% enter 1/100, for 2.75% enter 275/10000"
-                      read -p "What do you want your pool's Tax rate to be? (in fraction form) :" TAX_RATIO
+                      read -p "What do you want your pool's Tax rate to be? in fraction form :" TAX_RATIO
                       echo "You entered a Tax rate of: " 
                       awk -vn=$TAX_RATIO 'BEGIN{print(('$TAX_RATIO')*100)" %"}'
                       #TODO: error check confirmation, for now, just do it
-                      #read -p "Is this correct? (y/n)" confirm_TAX_RATIO
+                      #read -p "Is this correct? y/n" confirm_TAX_RATIO
                       #
                       #TAX_FIXED set below, also known as flat tax
                       echo "========="
                       echo "SET TAX FIXED: this is a flat fee in Ada that your pool will deduct from total rewards earned."
                       read -p "What is your pool's Fixed Tax fee in Ada? " TAX_FIXED
                       echo "shown in lovelaces: "
-                      awk -vn=$TAX_FIXED 'BEGIN{print(('$TAX_FIXED')*1000000)" Lovelaces"}'
+                      awk -vn=$TAX_FIXED 'BEGIN{print'$TAX_FIXED'*1000000" Lovelaces"}'
                       #TODO: error check confirmation, for now, just do it
                       #read -p "Is this correct? y/n" confirm_TAX_FIXED
                       #
@@ -227,7 +227,7 @@ else
                      sleep 3
                 fi
           else
-            echo  "ATTENTION: you must put a copy of node-config-GENERIC-INFILE.yaml in your home directory (eg ~/ or /home/<username>/)"
+            echo  "ATTENTION: you must put a copy of node-config-GENERIC-INFILE.yaml in your home directory"
           fi
   fi
 # closes the opening check for an argument
