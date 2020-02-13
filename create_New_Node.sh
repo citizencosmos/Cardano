@@ -101,7 +101,7 @@ else
                       #TODO: concatenate the jcli command with the input variables from above
                       # Step 5.5 Generate your pool registration certificate
                       echo "Creating your stake pool registration certificate in ~/node"$1"/files directory"
-                      echo "$(jcli-test certificate new stake-pool-registration --kes-key $(cat ~/node"$1"/files/kes"$1".pub) --vrf-key $(cat ~/node"$1"/files/vrf"$1".pub) --owner $(cat ~/node"$1"/files/owner"$1".addr) --management-threshold 1 --tax-limit "$TAX_LIMIT"  --tax-ratio "$TAX_RATIO" --tax-fixed "$TAX_FIXED" --start-validity 0 > ~/node"$1"/files/stake-pool-registration"$1".cert)"
+                      echo "$(jcli certificate new stake-pool-registration --kes-key $(cat ~/node"$1"/files/kes"$1".pub) --vrf-key $(cat ~/node"$1"/files/vrf"$1".pub) --owner $(cat ~/node"$1"/files/owner"$1".addr) --management-threshold 1 --tax-limit "$TAX_LIMIT"  --tax-ratio "$TAX_RATIO" --tax-fixed "$TAX_FIXED" --start-validity 0 > ~/node"$1"/files/stake-pool-registration"$1".cert)"
                      echo "Whew. That was more work than I expected."
                      read -p "Remind me of your name please?  " username
                      echo "It's been fun "$username"! Let's do this again sometime soon!"
