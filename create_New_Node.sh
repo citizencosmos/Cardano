@@ -11,10 +11,8 @@ else
   then
       echo "Ooops. Try again because ~/node"$1" already exists. Choose another number or letter for your new NODE_ID"
   else
-      #set the GENESIS_BLOCK_HASH variable if it doesn't exist
-      [ ! $GENESIS_BLOCK_HASH && -f ~/.bashrc ]; echo "export GENESIS_BLOCK_HASH='8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676'" >> ~/.bashrc";
-      echo "Saving the GENESIS_BLOCK_HASH for ITNv1 in your ~/.bashrc"
-      source ~/.bashrc  
+      #set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
+      [[ $GENESIS_BLOCK_HASH ]] && echo $GENESIS_BLOCK_HASH || GENESIS_BLOCK_HASH =8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676 && echo "Genesis Block Hash is : " $GENESIS_BLOCK_HASH; 
       # ok let's make the directories for your new node 
       echo "Creating directory and files for node"$1" now..."
       mkdir -v  ~/node$1
