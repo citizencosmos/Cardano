@@ -3,7 +3,7 @@
 if [ -z $1 ]
 then
 #script wasn't passed an input argument, try again
-echo "Give a number or letter to assign for the new Node, eg Node4 or NodeD"
+echo "Give a number or letter to assign for the new Node, eg Node04 or NodeD"
 echo "RECOMMENDED to use a two digit number for NODE_ID (eg 88) as it can be used for your PORT configuration in your new node-config file"
 else
 #I suck at indenting, so this looks like garbage, sorry
@@ -11,10 +11,11 @@ else
   then
       echo "Ooops. Try again because ~/node"$1" already exists. Choose another number or letter for your new NODE_ID"
   else
-      #get your server's public IP address
-      PUBLC_ADDRESS="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+      #get your server's public IP address and current username
+      PUBLC_ADDRESS=dig +short myip.opendns.com @resolver1.opendns.com)
+      echo "creating node for user: "$USER" on IP address: "$PUBLC_ADDRESS
       #set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
-      [[ $GENESIS_BLOCK_HASH ]] && echo $GENESIS_BLOCK_HASH || GENESIS_BLOCK_HASH =8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676 && echo "Genesis Block Hash is : " $GENESIS_BLOCK_HASH; 
+      [[ $GENESIS_BLOCK_HASH ]] && echo $GENESIS_BLOCK_HASH || GENESIS_BLOCK_HASH =8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676 && echo "using Genesis Block Hash for ITN v1: " $GENESIS_BLOCK_HASH; 
       # ok let's make the directories for your new node 
       echo "Creating directory and files for node"$1" now..."
       mkdir -v  ~/node$1
@@ -33,6 +34,8 @@ else
                if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
                then
                      echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
+                     sed 's/<PUBLC_ADDRESS>/'$PUBLC_ADDRESS'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
+                     sed 's/<USERNAME>/'$USER'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
                      sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
                      echo "Confirm deletion of temporary generic node-config from files directory"
                      rm -i -v ~/node$1/files/node-config-GENERIC-INFILE.yaml
