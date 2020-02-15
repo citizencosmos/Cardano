@@ -11,14 +11,16 @@ else
   then
       echo "Ooops. Try again because ~/node"$1" already exists. Choose another number or letter for your new NODE_ID"
   else
+      #get your server's public IP address
+      PUBLC_ADDRESS="$(dig +short myip.opendns.com @resolver1.opendns.com)"
       #set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
       [[ $GENESIS_BLOCK_HASH ]] && echo $GENESIS_BLOCK_HASH || GENESIS_BLOCK_HASH =8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676 && echo "Genesis Block Hash is : " $GENESIS_BLOCK_HASH; 
       # ok let's make the directories for your new node 
       echo "Creating directory and files for node"$1" now..."
       mkdir -v  ~/node$1
-      mkdir -v ~/storage$1
-      [ ! -d ~/storage/ ] || mkdir -v ~/storage
-      cp -a -v ~/storage/. ~/storage$1/
+      mkdir -v ~/node$1/storage$1
+      [ ! -d ~/storage/ ] || mkdir -v ~/storage && echo "will take a bit longer to bootstrap without a recent copy of the blockchain blocks.sqlite"
+      [ -f ~/storage/blocks.sqllite ] && cp -a -v ~/storage/. ~/storage$1/ || echo "we didn't find a copy of the blockchain db, so the node will build one later" 
       mkdir -v ~/node$1/files
       echo "Creating log file for node"$1
       touch ~/logs/node$1.out
