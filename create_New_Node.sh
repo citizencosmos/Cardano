@@ -7,10 +7,22 @@ USERNAME=$USER
 PUBLIC_ADDRESS=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
 [[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
-# check that Jormungandr and JCLI are installed
+# check that Jormungandr and JCLI are installed, and if a node is already running use it for something!
 if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
   then 
-    echo $CMD1" and "$CMD2" both found"
+    echo $CMD1" and "$CMD2" installed already!"
+#    jsettingsf="/tmp/.jorm_settings.tmp"
+#    read -p "What REST PORT is an active node using? [4 or 5 digits >= 1025, please] " JormPORT
+#    if [[ $JormPORT =~ ^[0-9]{4,5}$ ]] && ($JormPORT -ge 1024); then 
+#      jcli rest v0 settings get --output-format json -h http://127.0.0.1:$JormPORT > $jsettingsf
+#      rc=$?
+#      if [ $rc -ne 0 ]; then
+#        # do something useful here with the json output
+#        else
+#        "Atleast one node needs to be up and responding before starting this script!"
+#        exit 1
+#      fi
+#    fi
   else 
     echo $CMD1" and/or "$CMD2" not found. Please install both before continuing."
     exit 1
@@ -106,38 +118,68 @@ then  #
         jcli key to-public < ~/node$1/files/kes$1.prv > ~/node$1/files/kes$1.pub
         jcli key generate --type=Curve25519_2HashDH > ~/node$1/files/vrf$1.prv
         jcli key to-public < ~/node$1/files/vrf$1.prv > ~/node$1/files/vrf$1.pub
-        #get the inputs for Tax Ratio, Tax Fixed, and Tax Limit (optional)
-        echo "******=========******"
+        #
+        # get the inputs for Tax Ratio, Tax Fixed, and Tax Limit (optional)
+        #
+        echo "******************===============================******************"
         echo "Now let's set up your pool's fee structure"
         echo "Do this carefully, because I'm not checking your math for errors!"
         #
-        #TAX RATIO set below, also known as tax rate your pool charges delegators
-        echo "========="
-        echo "SET TAX RATIO: the percentage of rewards your pool will deduct from total rewards earned."
-        echo "This MUST be entered in a fraction, eg for 10% enter 1/10, for 1% enter 1/100, for 2.75% enter 275/10000"
-        read -p "What do you want your pool's Tax rate to be? (in fraction form) :" TAX_RATIO
-        echo "You entered a Tax rate of: " 
-        awk -vn=$TAX_RATIO 'BEGIN{print(('$TAX_RATIO')*100)" %"}'
-        #TODO: error check confirmation, for now, just do it
-        #read -p "Is this correct? (y/n)" confirm_TAX_RATIO
+        # TAX RATIO set below, also known as tax rate your pool charges delegators
         #
-        #TAX_FIXED set below, also known as flat tax
-        echo "========="
-        echo "SET TAX FIXED: this is a flat fee in Ada that your pool will deduct from total rewards earned."
-        read -p "What is your pool's Fixed Tax fee in Ada? " TAX_FIXED
-        echo "shown in lovelaces: "
-        awk -vn=$TAX_FIXED 'BEGIN{print(('$TAX_FIXED')*1000000)" Lovelaces"}'
-        #TODO: error check confirmation, for now, just do it
-        #read -p "Is this correct? y/n" confirm_TAX_FIXED
+        echo "=========  SET TAX_FIXED  ========="
+        echo "The Fixed Tax is the flat fee your pool will take off the top of total rewards earned."
+        echo "IOHK definition: this is the fixed cut the stake pool will take from the total reward due to the stake pool;"
+        TAX_FIXED_ADA=0
+        Lovelaces=1000000
+        confirm_TAX_FIXED="n"
+        while [ ! $confirm_TAX_FIXED == "Y" ]
+          do
+            read -p "What is your pool's Fixed Flat Fee? [in Ada, use decimals if you like]:" TAX_FIXED_ADA
+            TAX_FIXED=0
+            echo "You entered a TAX_FIXED flat fee of: " $TAX_FIXED_ADA " Ada which is :"
+            TAX_FIXED=$(awk -v taxfixed=$TAX_FIXED_ADA 'BEGIN{print(('$TAX_FIXED_ADA' * '$Lovelaces'))}')
+            echo $TAX_FIXED " when shown in Lovelaces"
+            # confirm TAX_FIXED fee, user must answer Y
+            read -p "Is this correct? [Y/n]" confirm_TAX_FIXED
+          done
+        echo "OK, your TAX_FIXED flat fee is: " $TAX_FIXED " Lovelaces"
         #
-        #TAX_LIMIT set below, the maximum amount of fees your pool will take from rewards
-        echo "========="
-        echo "SET TAX LIMIT: this is a MAXIMUM or CAP of rewards in Ada that your pool will receive from total rewards earned."
-        read -p "What is your pool's Tax Limit cap in Ada? " TAX_LIMIT
-        echo "shown in lovelaces: "
-        awk -vn=$TAX_LIMIT 'BEGIN{print(('$TAX_LIMIT')*1000000)" Lovelaces"}'
-        #TODO: error check confirmation, for now, just do it
-        #read -p "Is this correct? y/n" confirm_TAX_LIMIT
+        # TAX RATIO set below, also known as tax rate your pool charges delegators
+        echo "=========  SET TAX_RATIO  ========="
+        echo "The Tax Ratio is the percentage of rewards your pool will deduct from total rewards earned, *after* the FIXED Tax has been deducted."
+        echo "IOHK definition: this is the percentage of the remaining value that will be taken from the total due"
+        echo "Enter in fraction form [eg for 10% enter 1/10, for 1% enter 1/100, for 2.75% enter 275/10000]"
+        TAX_RATIO=0
+        PCT=100
+        confirm_TAX_RATIO="n"
+        while [ ! $confirm_TAX_RATIO == "Y" ]
+          do
+            read -p "What is your pool's Tax Ratio? [in fraction form]:" TAX_RATIO_INPUT
+            TAX_RATIO=0
+            TAX_RATIO=$(awk -v taxrate=$TAX_RATIO_INPUT 'BEGIN{print(('$TAX_RATIO_INPUT' * '$PCT'))" %"}')  #convert and display as a percentage
+            echo "You entered a Tax rate of: "$TAX_RATIO
+            read -p "Is this correct? [Y/n]" confirm_TAX_RATIO
+          done
+        echo "OK, your TAX RATIO is: "$TAX_RATIO
+        # TAX_LIMIT set below, the maximum amount of fees your pool will take from rewards
+        echo "=========  SET TAX_LIMIT  ========="
+        echo "The Tax Limit is the cap or maximum of all fees your pool will take from total rewards earned."
+        echo "IOHK definition: a value that can be set to limit the pool's Tax."
+        TAX_FIXED_LIMIT=0
+        confirm_TAX_LIMIT="n"
+        while [ ! $confirm_TAX_LIMIT == "Y" ]
+          do
+            read -p "What is your pool's Tax Limit or cap? [in Ada, use decimals if you like]:" TAX_LIMIT_ADA
+            TAX_LIMIT=0
+            echo "You entered a TAX_LIMIT cap of: " $TAX_LIMIT_ADA " Ada which is :"
+            TAX_LIMIT=$(awk -v taxlimit=$TAX_LIMIT_ADA 'BEGIN{print(('$TAX_LIMIT_ADA' * '$Lovelaces'))}')
+            echo $TAX_FIXED " when shown in Lovelaces"
+            # confirm TAX_LIMIT fee, user must answer Y
+            read -p "Is this correct? [Y/n]" confirm_TAX_FIXED
+          done
+        echo "OK, your TAX_LIMIT or capped fee is: " $TAX_FIXED " Lovelaces"
+        #
         #
         #TODO: concatenate the jcli command with the input variables from above
         # Step 5.5 Generate your pool registration certificate
