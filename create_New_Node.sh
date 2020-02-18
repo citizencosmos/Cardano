@@ -55,7 +55,7 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
     #done making new directories and files
     
   # check for node-config-GENERIC-INFILE.yaml in user home directory and copy to new node dir
-    if [ ! -f ~/node-config-GENERIC-INFILE.yaml ] ; then cd ~  && wget -nc https://raw.githubusercontent.com/citizencosmos/Cardano/master/node-config-GENERIC-INFILE.yaml; fi
+    if [ ! -f ~/node-config-GENERIC-INFILE.yaml ] ; then cd && wget -nc https://raw.githubusercontent.com/citizencosmos/Cardano/master/node-config-GENERIC-INFILE.yaml; fi
   # copy node-config-GENERIC to new node directory
     cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
     
