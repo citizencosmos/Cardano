@@ -4,16 +4,16 @@
 CMD1=jcli
 CMD2=jormungandr
 USERNAME=$USER
-PUBLIC_ADDRESS=dig +short myip.opendns.com @resolver1.opendns.com
+PUBLIC_ADDRESS=$(dig +short myip.opendns.com @resolver1.opendns.com)
 # set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
-[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH=8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676
+[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
 # check that Jormungandr and JCLI are installed
 if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
   then 
     echo $CMD1" and "$CMD2" both found"
   else 
     echo $CMD1" and/or "$CMD2" not found. Please install both before continuing."
-    exit
+    exit 1
 fi
 
 #check if the script was given an argument
@@ -22,11 +22,11 @@ then
   #script wasn't passed an input argument, try again
   echo "Choose an alphanumeric ID for the new Node, eg 04 or D or ALICE"
   echo "We RECOMMEND a 2 or 3 digit number for NODE_ID [eg 88 or 456] which can also be used for your PORTS"
-  exit
+  exit 1
 fi
 
 # check if the new Node ID has already been used
-if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already exists." && exit; fi
+if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already exists." && exit 1 ; fi
 
 # make the directories and files for your new node 
     echo "Creating directory and files for node"$1" now..."
@@ -154,7 +154,7 @@ else
         echo "You chose to name your Node something other than 2 or 3 digits, against my advice. Anyways...."
         sleep 5
         echo "Bye Bye for now"
-        exit
+        exit 1
         #TODO: we'll add functionality this later if the node is named something other than 2 or 3 digits
 fi
 
