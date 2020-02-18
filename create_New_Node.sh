@@ -6,7 +6,7 @@ CMD2=jormungandr
 USERNAME=$USER
 PUBLIC_ADDRESS=dig +short myip.opendns.com @resolver1.opendns.com
 # set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
-[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH =8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676
+[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH=8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676
 # check that Jormungandr and JCLI are installed
 if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
   then 
@@ -43,7 +43,7 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
     #done making new directories and files
     
   # check for node-config-GENERIC-INFILE.yaml in user home directory and copy to new node dir
-    if [ ! -f ~/node-config-GENERIC-INFILE.yaml ] ; then cd ~  && wget -nc https://github.com/citizencosmos/Cardano/blob/master/node-config-GENERIC-INFILE.yaml; fi
+    if [ ! -f ~/node-config-GENERIC-INFILE.yaml ] ; then cd ~  && wget -nc https://raw.githubusercontent.com/citizencosmos/Cardano/master/node-config-GENERIC-INFILE.yaml; fi
   # copy node-config-GENERIC to new node directory
     cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
     
