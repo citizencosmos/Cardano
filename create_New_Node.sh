@@ -12,7 +12,7 @@ if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
   then 
     echo $CMD1" and "$CMD2" both found"
   else 
-    echo $CMD1" or "$CMD2" not found. Please install both before continuing."
+    echo $CMD1" and/or "$CMD2" not found. Please install both before continuing."
     exit
 fi
 
@@ -32,9 +32,9 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
     echo "Creating directory and files for node"$1" now..."
     mkdir -v  ~/node$1
     mkdir -v ~/node$1/storage$1
-    # TODO: make a publicly available copy of the blockchain blocks.sqlite file via https
-    # use a watch n 60 cp ~/storage ~/path/to/publicly/available/blocks.sqlite
-    [ -d ~/storage ] || mkdir -v ~/storage && echo "will take a bit longer to bootstrap without a recent copy of the blockchain blocks.sqlite"
+    # TODO: OR NOT...make a publicly available copy of the blockchain blocks.sqlite file via https
+    # use a watch n 60 cp ~/storage ~/path/to/publicly/available/blocks.sqlite ?
+    #[ -d ~/storage ] || mkdir -v ~/storage && echo "will take a bit longer to bootstrap without a recent copy of the blockchain blocks.sqlite"
     [ -f ~/storage/blocks.sqllite ] && cp -a -v ~/storage/. ~/storage$1/ || echo "we didn't find a copy of the blockchain db, so the node will build one later" 
     mkdir -v ~/node$1/files
     echo "Creating log file for node"$1
@@ -48,15 +48,15 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
     cp -v ~/node-config-GENERIC-INFILE.yaml ~/node$1/files/
     
   # check for 2 or 3 digit NODE_ID
-    if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
-    then  #
+if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
+then  #
         echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
         sed 's/<PUBLC_ADDRESS>/'$PUBLC_ADDRESS'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
         sed 's/<USERNAME>/'$USER'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
         sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
         #leave peers section commented out if user indicates there is already an instance of jormungandr running
-        read -p "Do you already have a Jormungandr node currently running on this server? [y/n] " liveJorm
-        if [ ! $liveJorm='y' ]; then sed '20,48{s/#/''/g}' ~/node$1/files/node-config$1.yaml; fi
+        read -p "Do you already have an active Jormungandr node currently running on this server? [Y/n] " existsLiveJorm
+        if [ ! $existsLiveJorm == "Y" ]; then sed '20,48{s/#PEER#/''/g}' ~/node$1/files/node-config$1.yaml; fi
         #  delete temporary generic node-config from files directory"
         rm ~/node$1/files/node-config-GENERIC-INFILE.yaml
         
@@ -73,7 +73,10 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
         nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml > ~/node$1/files/nohup$1.out &
         echo "......waiting 20 seconds for node to start....."
         sleep 20
+        # get and echo the current status of the new passive node
         echo "$(jcli rest v0 node stats get -h http://127.0.0.1:41"$1"/api)"
+        
+        # Do you want to make this node a Leader node? If Yes we need to do the do the stuff below
         
         # Below is taken directly from IOHK guide on registering a stake pool
         # https://github.com/cardano-foundation/incentivized-testnet-stakepool-registry/wiki/How-to-register-your-stake-pool-on-the-chain
@@ -146,16 +149,12 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
         echo "OK! All done for now...and"
         echo "Hey, "$username", remember to send 500.3 tAda to your pledge address and PROTECT YOUR KEYS!"
         sleep 3
-             else
-                   #the given NODE_ID is something other than 2 or 3 digits
-                   echo "You chose to name your Node something other than 2 or 3 digits, against my advice. Anyways...."
-                   sleep 5
-                   #TODO: we'll fix this later if the node is named something other than 2 or 3 digits
+else
+        #the given NODE_ID is something other than 2 or 3 digits
+        echo "You chose to name your Node something other than 2 or 3 digits, against my advice. Anyways...."
+        sleep 5
+        echo "Bye Bye for now"
+        exit
+        #TODO: we'll add functionality this later if the node is named something other than 2 or 3 digits
+fi
 
-              fi
-        else
-          echo  "ATTENTION: you must put a copy of node-config-GENERIC-INFILE.yaml in your home directory"
-        fi
-fi
-# closes the opening check for an argument
-fi
