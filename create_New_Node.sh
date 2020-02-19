@@ -3,8 +3,13 @@
 # let' set some variables, even we don't get to use them all
 CMD1=jcli
 CMD2=jormungandr
+# set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
+[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
+echo "Using ITNv1 Genesis Block Hash: "$GENESIS_BLOCK_HASH
 USERNAME=$USER
+echo $USERNAME
 PUBLIC_ADDRESS=$(dig +short myip.opendns.com @resolver1.opendns.com)
+echo $PUBLIC_ADDRESS
 # set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
 [[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
 # check that Jormungandr and JCLI are installed, and if a node is already running use it for something!
@@ -62,9 +67,9 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
   # check for 2 or 3 digit NODE_ID
 if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
 then  #
-        echo "Modifying your node-config"$1".yaml file with your two digit NODE_ID: "$1
+        echo "Modifying your node-config"$1".yaml file with your 2 or 3 digit node ID: "$1
         sed 's/<PUBLC_ADDRESS>/'$PUBLC_ADDRESS'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
-        sed 's/<USERNAME>/'$USER'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
+        sed 's/<USERNAME>/'$USERNAME'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
         sed 's/<NODE_ID>/'$1'/g' <~/node$1/files/node-config-GENERIC-INFILE.yaml >~/node$1/files/node-config$1.yaml
         #leave peers section commented out if user indicates there is already an instance of jormungandr running
         read -p "Do you already have an active Jormungandr node currently running on this server? [Y/n] " existsLiveJorm
