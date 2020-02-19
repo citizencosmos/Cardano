@@ -189,20 +189,20 @@ then  #
             TAX_LIMIT=0
             echo "You entered a TAX_LIMIT cap of: " $TAX_LIMIT_ADA " Ada which is :"
             TAX_LIMIT=$(awk -v taxlimit=$TAX_LIMIT_ADA 'BEGIN{print(('$TAX_LIMIT_ADA' * '$Lovelaces'))}')
-            echo $TAX_FIXED " when shown in Lovelaces"
+            echo $TAX_LIMIT " when shown in Lovelaces"
             # confirm TAX_LIMIT fee, user must answer Y
-            read -p "Is this correct? [Y/n]" confirm_TAX_FIXED
+            read -p "Is this correct? [Y/n]" confirm_TAX_LIMIT
           done
-        echo "OK, your TAX_LIMIT or capped fee is: " $TAX_FIXED " Lovelaces"
+        echo "OK, your TAX_LIMIT or maximum fee your pool will charge is: " $TAX_LIMIT " Lovelaces"
         #
         #
         #TODO: concatenate the jcli command with the input variables from above
         # Step 5.5 Generate your pool registration certificate
         echo "Creating your stake pool registration certificate in ~/node"$1"/files directory"
-        echo "$(jcli certificate new stake-pool-registration --kes-key $(cat ~/node"$1"/files/kes"$1".pub) --vrf-key $(cat ~/node"$1"/files/vrf"$1".pub) --owner $(cat ~/node"$1"/files/owner"$1".addr) --management-threshold 1 --tax-limit "$TAX_LIMIT"  --tax-ratio "$TAX_RATIO" --tax-fixed "$TAX_FIXED" --start-validity 0 > ~/node"$1"/files/stake-pool-registration"$1".cert)"
+        echo $(jcli certificate new stake-pool-registration --kes-key $(cat ~/node$1/files/kes$1.pub) --vrf-key $(cat ~/node$1/files/vrf$1.pub) --owner $(cat ~/node$1/files/owner$1.addr) --management-threshold 1 --tax-limit $TAX_LIMIT  --tax-ratio $TAX_RATIO --tax-fixed $TAX_FIXED --start-validity 0 > ~/node$1/files/stake-pool-registration$1.cert)
         echo "Whew. That was more work than I expected."
-        read -p "Remind me of your name please?  " username
-        echo "It's been fun "$username"! Let's do this again sometime soon!"
+        read -p "Remind me of your name please?  " yourname
+        echo "It's been fun "$yourname"! Let's do this again sometime soon!"
         echo "OK! All done for now...and"
         echo "Hey, "$username", remember to send 500.3 tAda to your pledge address and PROTECT YOUR KEYS!"
         sleep 3
