@@ -68,9 +68,9 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
 if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
 then  #
         echo "Modifying your node-config"$1".yaml file with your 2 or 3 digit node ID: "$1
-        sed --quiet '{s/<PUBLC_ADDRESS>/'$PUBLC_ADDRESS'/g}' ~/node$1/files/node-config-GENERIC-INFILE.yaml
-        sed --quiet '{s/<USERNAME>/'$USERNAME'/g}' ~/node$1/files/node-config-GENERIC-INFILE.yaml
-        sed --quiet '{s/<NODE_ID>/'$1'/g}' < ~/node$1/files/node-config-GENERIC-INFILE.yaml > ~/node$1/files/node-config$1.yaml
+        sed --quiet 's/<PUBLC_ADDRESS>/'$PUBLC_ADDRESS'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
+        sed --quiet 's/<USERNAME>/'$USERNAME'/g' ~/node$1/files/node-config-GENERIC-INFILE.yaml
+        sed --quiet 's/<NODE_ID>/'$1'/g' < ~/node$1/files/node-config-GENERIC-INFILE.yaml > ~/node$1/files/node-config$1.yaml
         #leave peers section commented out if user indicates there is already an instance of jormungandr running
         read -p "Do you already have an active Jormungandr node currently running on this server? [Y/n] " existsLiveJorm
         if [ ! $existsLiveJorm == "Y" ]; then sed '20,50{s/#PEER#/''/g}' ~/node$1/files/node-config$1.yaml; fi
