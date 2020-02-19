@@ -84,12 +84,24 @@ then  #
         echo "Starting Jormungandr PASSIVE node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
         nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml > ~/node$1/files/nohup$1.out &
         echo "......waiting 20 seconds for node to start....."
-        sleep 20
         # get and echo the current status of the new passive node
-        echo "$(jcli rest v0 node stats get -h http://127.0.0.1:41"$1"/api)"
-        
-        # Do you want to make this node a Leader node? If Yes we need to do the do the stuff below
-        
+        # temp file to store json of
+        jormstats="/tmp/jorm_stats.tmp"
+        stats=$(jcli rest v0 node stats get -h http://127.0.0.1:41$1/api)
+        while [ $stats == "" ]
+          do
+            stats=$(jcli rest v0 node stats get -h http://127.0.0.1:41$1/api)
+            echo "bootstrapping Passive node"$1
+            sleep 10
+          done
+        echo $stats
+        # check if node is to stay Passive or be promoted to Leader node capable of making blocks        
+        read -p "Do you want to promote this node to a LEADER node [can make blocks]? [Y/n] " makeLeader
+        if [ ! $makeLeader == "Y" ]; then echo "Congratulations! You just finished making a Cardano Jormungandr Passive Node named node"$1 && exit 1; fi
+            
+        # Looks like you want to make this node a Leader node.  we need to do the do the stuff below
+        echo "Ok, let's get started promoting node"$1" to a Leader."
+        echo "This will make a new pool, which you can register with Cardano Foundation to get a ticker."
         # Below is taken directly from IOHK guide on registering a stake pool
         # https://github.com/cardano-foundation/incentivized-testnet-stakepool-registry/wiki/How-to-register-your-stake-pool-on-the-chain
         
