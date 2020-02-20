@@ -7,11 +7,12 @@ CMD2=jormungandr
 [[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
 echo "Using ITNv1 Genesis Block Hash: "$GENESIS_BLOCK_HASH
 USERNAME=$USER
-echo $USERNAME
+echo "This Jormungandr node will be installed using the "$USERNAME" context. [means the process will run in this account name]"
 PUBLIC_ADDRESS=$(dig +short myip.opendns.com @resolver1.opendns.com)
-echo $PUBLIC_ADDRESS
+echo "Jormungandr will use this IP Address: "$PUBLIC_ADDRESS
 # set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
 [[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
+echo "The Genesis Block Hash you're using is: "$GENESIS_BLOCK_HASH
 # check that Jormungandr and JCLI are installed, and if a node is already running use it for something!
 if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
   then 
@@ -22,7 +23,7 @@ if command -v $CMD1 && command -v $CMD2 > /dev/null 2>&1
 #      jcli rest v0 settings get --output-format json -h http://127.0.0.1:$JormPORT > $jsettingsf
 #      rc=$?
 #      if [ $rc -ne 0 ]; then
-#        # do something useful here with the json output
+#        # TODO: do something useful here with the json output
 #        else
 #        "Atleast one node needs to be up and responding before starting this script!"
 #        exit 1
@@ -38,7 +39,7 @@ if [ -z $1 ]
 then
   #script wasn't passed an input argument, try again
   echo "Choose an alphanumeric ID for the new Node, eg 04 or D or ALICE"
-  echo "We RECOMMEND a 2 or 3 digit number for NODE_ID [eg 88 or 456] which can also be used for your PORTS"
+  echo "I STRONGLY RECOMMEND a 2 or 3 digit number for NODE_ID [eg 88 or 456] which can also be used for your PORTS"
   exit 1
 fi
 
@@ -68,7 +69,7 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
 if [[ $1 =~ ^[0-9]{2,3}$ ]] && ((number=10#$1))
 then  #
         echo "Modifying your node-config"$1".yaml file with your 2 or 3 digit node ID: "$1
-        sed -e 's/<PUBLIC_ADDRESS>/'${PUBLIC_ADDRESS}'/g;s/<USERNAME>/'${USERNAME}'/g;s/<NODE_ID>/'$1'/g' < ~/node-config-GENERIC-INFILE.yaml > ~/node$1/files/node-config$1.yaml
+        sed -e "s/<PUBLIC_ADDRESS>/"${PUBLIC_ADDRESS}"/g;s/<USERNAME>/"${USERNAME}"/g;s/<NODE_ID>/"$1"/g" < ~/node-config-GENERIC-INFILE.yaml > ~/node$1/files/node-config$1.yaml
         #leave peers section commented out if user indicates there is already an instance of jormungandr running
         read -p "Do you already have an active Jormungandr node currently running on this server? [Y/n] " existsLiveJorm
         if [ ! $existsLiveJorm == "Y" ]; then sed '20,50{s/#PEER#/''/g}' ~/node$1/files/node-config$1.yaml; fi
