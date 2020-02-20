@@ -55,8 +55,8 @@ if [ -d ~/node$1 ] ; then echo "Ooops. Try another node ID. ~/node"$1" already e
     [ -f ~/storage/blocks.sqllite ] && cp -a -v ~/storage/. ~/storage$1/ || echo "we didn't find a copy of the blockchain db, so the node will build one later" 
     mkdir -v ~/node$1/files
     echo "Creating log file for node"$1
-    if [ ! -d ~/logs ] ; then mkdir -v ~/logs; fi
-    touch ~/logs/node$1.out
+    mkdir -v ~/node$1/logs
+    touch ~/node$1/logs/node$1.out
     #done making new directories and files
     
   # check for node-config-GENERIC-INFILE.yaml in user home directory and copy to new node dir
@@ -85,7 +85,7 @@ then  #
         
         # that's pretty cool, but this is where it all starts... spin up a Jormungandr passive node!
         echo "Starting Jormungandr PASSIVE node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
-        nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml > ~/node$1/files/nohup$1.out &
+        nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml >> ~/node$1/logs/node$1.out 2>&1 &
         echo "......waiting 20 seconds for node to start....."
         # get and echo the current status of the new passive node
         # temp file to store json of
