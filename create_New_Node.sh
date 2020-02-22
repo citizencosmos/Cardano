@@ -3,9 +3,6 @@
 # let' set some variables, even we don't get to use them all
 CMD1=jcli
 CMD2=jormungandr
-# set the GENESIS_BLOCK_HASH variable for ITNv1 if not already set
-[[ $GENESIS_BLOCK_HASH ]] || GENESIS_BLOCK_HASH="8e4d2a343f3dcf9330ad9035b3e8d168e6728904262f2c434a4f8f934ec7b676"
-echo "Using ITNv1 Genesis Block Hash: "$GENESIS_BLOCK_HASH
 USERNAME=$USER
 echo "This Jormungandr node will be installed using the "$USERNAME" context. [means the process will run in this account name]"
 PUBLIC_ADDRESS=$(dig +short myip.opendns.com @resolver1.opendns.com)
@@ -72,7 +69,7 @@ then  #
         sed -e "s/<PUBLIC_ADDRESS>/"${PUBLIC_ADDRESS}"/g;s/<USERNAME>/"${USERNAME}"/g;s/<NODE_ID>/"$1"/g" < ~/node-config-GENERIC-INFILE.yaml > ~/node$1/files/node-config$1.yaml
         #leave peers section commented out if user indicates there is already an instance of jormungandr running
         read -p "Do you already have an active Jormungandr node currently running on this server? [Y/n] " existsLiveJorm
-        if [ ! $existsLiveJorm == "Y" ]; then sed '20,50{s/#PEER#/''/g}' ~/node$1/files/node-config$1.yaml; fi
+        if [ $existsLiveJorm != "Y" ]; then sed '20,50{s/#PEER#//g}' ~/node$1/files/node-config$1.yaml; fi
         #  delete temporary generic node-config from files directory
         rm ~/node$1/files/node-config-GENERIC-INFILE.yaml
         
@@ -86,7 +83,7 @@ then  #
         
         # that's pretty cool, but this is where it all starts... spin up a Jormungandr passive node!
         echo "Starting Jormungandr PASSIVE node: node"$1" on LISTEN port 31"$1" and REST port 41"$1
-        nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml >> ~/node$1/logs/node$1.out 2>&1 &
+        echo $(nohup jormungandr --genesis-block-hash ${GENESIS_BLOCK_HASH} --config ~/node$1/files/node-config$1.yaml >> ~/node$1/logs/node$1.out 2>&1 &)
         echo "......waiting 20 seconds for node to start....."
         # get and echo the current status of the new passive node
         # temp file to store json of
